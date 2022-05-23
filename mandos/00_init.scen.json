@@ -1,0 +1,105 @@
+{
+    "name": "init",
+    "steps": [
+        {
+            "step": "setState",
+            "accounts": {
+                "address:owner": {
+                    "nonce": "0",
+                    "balance": "100,000"
+                }
+            },
+            "newAddresses": [
+                {
+                    "creatorAddress": "address:owner",
+                    "creatorNonce": "0",
+                    "newAddress": "sc:contract"
+                }
+            ]
+        },
+        {
+            "step": "scDeploy",
+            "txId": "deploy contract",
+            "tx": {
+                "from": "address:owner",
+                "contractCode": "file:../output/on-chain-attributes.wasm",
+                "arguments": [
+                    "str:QmaS44fS6KJEarBaUHma8f1Fqore1bLYY8DEvPV6atAnyy",
+                    "str:QmP9KNxdDzseRa9wmfnhazAnavwMT6f7HqpnFzJ9uXRxRg"
+                ],
+                "gasLimit": "100,000,000",
+                "gasPrice": "0"
+            },
+            "expect": {
+                "out": [],
+                "status": "",
+                "logs": [],
+                "gas": "*",
+                "refund": "*"
+            }
+        },
+        {
+            "step": "checkState",
+            "accounts": {
+                "sc:contract": {
+                    "nonce": "0",
+                    "balance": "0",
+                    "storage": {
+                        "str:imageCid": "str:QmaS44fS6KJEarBaUHma8f1Fqore1bLYY8DEvPV6atAnyy",
+                        "str:metadataCid": "str:QmP9KNxdDzseRa9wmfnhazAnavwMT6f7HqpnFzJ9uXRxRg"
+                    },
+                    "code": "file:../output/on-chain-attributes.wasm"
+                },
+                "+": "*"
+            }
+        },
+        {
+            "step": "setState", 
+            "accounts": {
+                "sc:contract": {
+                    "owner": "address:owner",
+                    "nonce": "0",
+                    "balance": "0",
+                    "storage": {
+                        "str:nftTokenID": "str:NFT-abcdef",
+                        "str:imageCid": "str:QmaS44fS6KJEarBaUHma8f1Fqore1bLYY8DEvPV6atAnyy",
+                        "str:metadataCid": "str:QmP9KNxdDzseRa9wmfnhazAnavwMT6f7HqpnFzJ9uXRxRg"
+                    },
+                    "esdt": {
+                        "str:NFT-abcdef": {
+                            "roles": [
+                                "ESDTRoleNFTCreate",
+                                "ESDTRoleNFTBurn"
+                            ]
+                        }
+                    },
+                    "code": "file:../output/on-chain-attributes.wasm"
+                }
+            }
+        },
+        {
+            "step": "checkState",
+            "accounts": {
+                "sc:contract": {
+                    "nonce": "0",
+                    "balance": "0",
+                    "storage": {
+                        "str:nftTokenID": "str:NFT-abcdef",
+                        "str:imageCid": "str:QmaS44fS6KJEarBaUHma8f1Fqore1bLYY8DEvPV6atAnyy",
+                        "str:metadataCid": "str:QmP9KNxdDzseRa9wmfnhazAnavwMT6f7HqpnFzJ9uXRxRg"
+                    },
+                    "esdt": {
+                        "str:NFT-abcdef": {
+                            "roles": [
+                                "ESDTRoleNFTCreate",
+                                "ESDTRoleNFTBurn"
+                            ]
+                        }
+                    },
+                    "code": "file:../output/on-chain-attributes.wasm"
+                },
+                "+": "*"
+            }
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "description": "My beautiful NFT",
+    "attributes": [
+        {
+            "trait_type": "Background",
+            "value": "Ocean"
+        },
+        {
+            "trait_type": "Skin",
+            "value": "Boss"
+        },
+        {
+            "trait_type": "Color",
+            "value": "Blue"
+        },
+        {
+            "trait_type": "Accessories",
+            "value": "Gun"
+        }
+    ]
+}

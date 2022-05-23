@@ -1,0 +1,60 @@
+{
+    "name": "fill trait types and attributes",
+    "steps": [
+        {
+            "step": "externalSteps",
+            "path": "00_init.scen.json"
+        },
+        {
+            "step": "scCall", 
+            "txId": "fill attributes for number ",
+            "tx": {
+                "from": "address:owner",
+                "to": "sc:contract",
+                "function": "fillAttributes",
+                "arguments": [
+                    "1", "str:ocean", "str:boss", "str:blue", "str:gun",
+                    "2", "str:desert", "str:farmer", "str:yellow", "str:none"
+                ],
+                "gasLimit": "35,000,000",
+                "gasPrice": "0"
+            },
+            "expect": {
+                "status": "0", 
+                "message": "",
+                "out": [],
+                "gas": "*",
+                "refund": "*"
+            }
+        },
+        {
+            "step": "checkState",
+            "accounts": {
+                "sc:contract": {
+                    "nonce": "0",
+                    "balance": "0",
+                    "storage": {
+                        "str:attributes|u64:1": { 
+                            "1-background": "nested:str:ocean",
+                            "2-skin": "nested:str:boss",
+                            "3-color": "nested:str:blue",
+                            "4-accessories": "nested:str:gun",
+                            "5-metadata": "nested:str:metadata:QmP9KNxdDzseRa9wmfnhazAnavwMT6f7HqpnFzJ9uXRxRg/1.json"
+                        },
+                        "str:attributes|u64:2": {
+                            "1-background": "nested:str:desert",
+                            "2-skin": "nested:str:farmer",
+                            "3-color": "nested:str:yellow",
+                            "4-accessories": "nested:str:none",
+                            "5-metadata": "nested:str:metadata:QmP9KNxdDzseRa9wmfnhazAnavwMT6f7HqpnFzJ9uXRxRg/2.json"
+                        },
+                        "+": "*"
+                    },
+                    "esdt": "*",
+                    "code": "file:../output/on-chain-attributes.wasm"
+                },
+                "+": "*"
+            }
+        }
+    ]
+}

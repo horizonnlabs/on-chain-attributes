@@ -1,0 +1,63 @@
+{
+    "name": "create nft",
+    "steps": [
+        {
+            "step": "externalSteps",
+            "path": "01_fill_attributes.scen.json"
+        },
+        {
+            "step": "scCall", 
+            "txId": "create Nft",
+            "tx": {
+                "from": "address:owner",
+                "to": "sc:contract",
+                "function": "createWithOnChainAttributes",
+                "arguments": [
+                    "str:NftOcean",
+                    "1"
+                ],
+                "gasLimit": "40,000,000",
+                "gasPrice": "0"
+            },
+            "expect": {
+                "status": "0", 
+                "message": "",
+                "out": [],
+                "gas": "*",
+                "refund": "*"
+            }
+        },
+        {
+            "step": "checkState",
+            "accounts": {
+                "sc:contract": {
+                    "nonce": "0",
+                    "balance": "*",
+                    "esdt": {
+                        "str:NFT-abcdef": {
+                            "instances": [
+                                {
+                                    "nonce": "1",
+                                    "balance": "1",
+                                    "uri": ["str:https://ipfs.io/ipfs/QmaS44fS6KJEarBaUHma8f1Fqore1bLYY8DEvPV6atAnyy/1.png"],
+                                    "attributes": "*"
+
+                                }
+                            ],
+                            "lastNonce": "1",
+                            "roles": [
+                                "ESDTRoleNFTCreate",
+                                "ESDTRoleNFTBurn"
+                            ]
+                        }
+                    },
+                    "storage": {
+                        "+": "*"
+                    },
+                    "code": "file:../output/on-chain-attributes.wasm"
+                },
+                "+": "*"
+            }
+        }
+    ]
+}

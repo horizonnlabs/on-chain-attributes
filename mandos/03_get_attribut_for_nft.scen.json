@@ -1,0 +1,37 @@
+{
+    "name": "create nft",
+    "steps": [
+        {
+            "step": "externalSteps",
+            "path": "02_create_nft.scen.json"
+        },
+        {
+            "step": "scQuery",
+            "txId": "get value for trait type one for nft 1",
+            "tx": {
+                "to": "sc:contract",
+                "function": "getAttributForNft",
+                "arguments": ["1", "1"]
+            },
+            "expect": {
+                "out": [
+                    "str:ocean"
+                ]
+            }
+        },
+        {
+            "step": "scQuery",
+            "txId": "get value for trait type 4 for nft 1",
+            "tx": {
+                "to": "sc:contract",
+                "function": "getAttributForNft",
+                "arguments": ["1", "4"]
+            },
+            "expect": {
+                "out": [
+                    "str:gun"
+                ]
+            }
+        }
+    ]
+}
