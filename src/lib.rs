@@ -8,6 +8,9 @@ const IPFS_GATEWAY: &[u8] = "https://ipfs.io/ipfs/".as_bytes();
 const METADATA_KEY_NAME: &[u8] = "metadata:".as_bytes();
 const METADATA_FILE_EXTENSION: &[u8] = ".json".as_bytes();
 
+const ROYALTIES: u64 = 100;
+const NFT_AMOUNT: u64 = 1;
+
 elrond_wasm::imports!();
 elrond_wasm::derive_imports!();
 
@@ -34,6 +37,45 @@ pub trait OnChainAttributes: token::TokenModule {
         self.metadata_cid().set(&metadata_cid);
     }
 
+    // create NFT with attributes in arg
+    #[only_owner]
+    #[endpoint(createNft)]
+    fn create_nft(
+        &self,
+        name: ManagedBuffer,
+        token_attributes: AttributesAsMultiValue<Self::Api>,
+    ) {
+        require!(!self.nft_token_id().is_empty(), "Token is not issued");
+
+        let (number, background, skin, color, accessories, level) = token_attributes.into_tuple();
+        let metadata = self.build_metadata(number);
+
+        let attributes = NftAttributes {
+            background,
+            skin,
+            color,
+            accessories,
+            level,
+            metadata,
+        };
+        let token = self.nft_token_id().get();
+        
+        let uri = self.build_uri(number);
+        let mut uris = ManagedVec::new();
+        uris.push(uri);
+
+        self.send().esdt_nft_create::<NftAttributes<Self::Api>>(
+            &token,
+            &BigUint::from(NFT_AMOUNT),
+            &name,
+            &BigUint::from(ROYALTIES),
+            &ManagedBuffer::new(),
+            &attributes,
+            &uris,
+        );
+    }
+
+    // create NFT with attributes from the storage
     #[only_owner]
     #[endpoint(createWithOnChainAttributes)]
     fn create_nft_with_on_chain_attributes(&self, name: ManagedBuffer, number: u64) {
@@ -52,9 +94,9 @@ pub trait OnChainAttributes: token::TokenModule {
 
         self.send().esdt_nft_create::<NftAttributes<Self::Api>>(
             &token,
-            &BigUint::from(1u64),
+            &BigUint::from(NFT_AMOUNT),
             &name,
-            &BigUint::from(100u64),
+            &BigUint::from(ROYALTIES),
             &ManagedBuffer::new(),
             &on_chain_attributes,
             &uris,
