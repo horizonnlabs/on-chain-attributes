@@ -13,23 +13,23 @@ elrond_wasm::derive_imports!();
 
 mod token;
 
-#[derive(ManagedVecItem, TopEncode, TopDecode, NestedEncode, NestedDecode, TypeAbi, Clone, PartialEq, Debug)]
+#[derive(TopEncode, TopDecode, NestedEncode, NestedDecode, TypeAbi)]
 pub struct NftAttributes<M: ManagedTypeApi> {
     pub background: ManagedBuffer<M>,
     pub skin: ManagedBuffer<M>,
     pub color: ManagedBuffer<M>,
-    pub accessories : ManagedBuffer<M>,
+    pub accessories: ManagedBuffer<M>,
+    pub level: u16,
     pub metadata: ManagedBuffer<M>,
 }
 
-pub type AttributesAsMultiValue<M> = 
-    MultiValue5<u64, ManagedBuffer<M>, ManagedBuffer<M>, ManagedBuffer<M>, ManagedBuffer<M>>;
+pub type AttributesAsMultiValue<M> =
+    MultiValue6<u64, ManagedBuffer<M>, ManagedBuffer<M>, ManagedBuffer<M>, ManagedBuffer<M>, u16>;
 
 #[elrond_wasm::contract]
 pub trait OnChainAttributes: token::TokenModule {
     #[init]
-    fn init(&self, image_cid: ManagedBuffer, metadata_cid: ManagedBuffer) 
-    {
+    fn init(&self, image_cid: ManagedBuffer, metadata_cid: ManagedBuffer) {
         self.image_cid().set(&image_cid);
         self.metadata_cid().set(&metadata_cid);
     }
@@ -38,7 +38,10 @@ pub trait OnChainAttributes: token::TokenModule {
     #[endpoint(createWithOnChainAttributes)]
     fn create_nft_with_on_chain_attributes(&self, name: ManagedBuffer, number: u64) {
         require!(!self.nft_token_id().is_empty(), "Token is not issued");
-        require!(!self.attributes(number).is_empty(), "On-chain attributes doesn't exist");
+        require!(
+            !self.attributes(number).is_empty(),
+            "On-chain attributes doesn't exist"
+        );
 
         let token = self.nft_token_id().get();
         let on_chain_attributes = self.attributes(number).get();
@@ -64,19 +67,18 @@ pub trait OnChainAttributes: token::TokenModule {
         let nft_data = self.blockchain().get_esdt_token_data(
             &self.blockchain().get_sc_address(),
             &token,
-            nonce
+            nonce,
         );
 
-        let nft_attributes = nft_data
-            .decode_attributes::<NftAttributes<Self::Api>>();
+        let nft_attributes = nft_data.decode_attributes::<NftAttributes<Self::Api>>();
 
         match trait_index {
-            1 => nft_attributes.background, // return ocean
-            2 => nft_attributes.skin, // return boss
-            3 => nft_attributes.color, // return blue
+            1 => nft_attributes.background,  // return ocean
+            2 => nft_attributes.skin,        // return boss
+            3 => nft_attributes.color,       // return blue
             4 => nft_attributes.accessories, // return gun
-            5 => nft_attributes.metadata, // return metadata:<cid>/1.json
-            _ => sc_panic!("Not found")
+            5 => nft_attributes.metadata,    // return metadata:<cid>/1.json
+            _ => sc_panic!("Not found"),
         }
     }
 
@@ -87,7 +89,7 @@ pub trait OnChainAttributes: token::TokenModule {
         attributes: MultiValueEncoded<AttributesAsMultiValue<Self::Api>>,
     ) {
         for attribut in attributes.into_iter() {
-            let (number, background, skin, color, accessories) = attribut.into_tuple();
+            let (number, background, skin, color, accessories, level) = attribut.into_tuple();
             let metadata = self.build_metadata(number);
 
             let attributes = NftAttributes {
@@ -95,7 +97,8 @@ pub trait OnChainAttributes: token::TokenModule {
                 skin,
                 color,
                 accessories,
-                metadata
+                level,
+                metadata,
             };
             self.attributes(number).set(&attributes);
         }
