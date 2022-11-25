@@ -58,10 +58,9 @@ pub trait TokenModule {
             }
             ManagedAsyncCallResult::Err(_) => {
                 let caller = self.blockchain().get_owner_address();
-                let (returned_tokens, token_id) = self.call_value().payment_token_pair();
+                let (token_id, returned_tokens) = self.call_value().egld_or_single_fungible_esdt();
                 if token_id.is_egld() && returned_tokens > 0 {
-                    self.send()
-                        .direct(&caller, &token_id, 0, &returned_tokens, &[]);
+                    self.send().direct(&caller, &token_id, 0, &returned_tokens);
                 }
             }
         }
