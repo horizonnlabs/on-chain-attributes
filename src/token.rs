@@ -3,18 +3,14 @@ elrond_wasm::derive_imports!();
 
 #[elrond_wasm::module]
 pub trait TokenModule {
-
     #[only_owner]
     #[payable("EGLD")]
     #[endpoint(issueToken)]
-    fn issue_token(
-        &self,
-        #[payment] issue_cost: BigUint,
-        token_name: ManagedBuffer,
-        token_ticker: ManagedBuffer,
-    ) {
+    fn issue_token(&self, token_name: ManagedBuffer, token_ticker: ManagedBuffer) {
         require!(self.nft_token().is_empty(), "Token already issued");
-		
+
+        let issue_cost = self.call_value().egld_value();
+
         self.send()
             .esdt_system_sc_proxy()
             .issue_non_fungible(
@@ -34,20 +30,16 @@ pub trait TokenModule {
             .with_callback(self.callbacks().issue_callback())
             .call_and_exit();
     }
-    
+
     #[only_owner]
     #[endpoint(setLocalRoles)]
     fn set_local_roles(&self) {
         require!(!self.nft_token().is_empty(), "Token is not issued");
 
-        let token = &self.nft_token_id().get();
-        let roles = [
-            EsdtLocalRole::NftCreate,
-            EsdtLocalRole::NftBurn
-            ];
+        let token = &self.nft_token().get_token_id();
+        let roles = [EsdtLocalRole::NftCreate, EsdtLocalRole::NftBurn, EsdtLocalRole::NftUpdateAttributes];
 
-        self
-            .send()
+        self.send()
             .esdt_system_sc_proxy()
             .set_special_roles(
                 &self.blockchain().get_sc_address(),
@@ -62,8 +54,8 @@ pub trait TokenModule {
     fn issue_callback(&self, #[call_result] result: ManagedAsyncCallResult<TokenIdentifier>) {
         match result {
             ManagedAsyncCallResult::Ok(token_id) => {
-                self.nft_token_id().set_token_id(&token_id);
-            },
+                self.nft_token().set_token_id(&token_id);
+            }
             ManagedAsyncCallResult::Err(_) => {
                 let caller = self.blockchain().get_owner_address();
                 let (returned_tokens, token_id) = self.call_value().payment_token_pair();
@@ -71,7 +63,7 @@ pub trait TokenModule {
                     self.send()
                         .direct(&caller, &token_id, 0, &returned_tokens, &[]);
                 }
-            },
+            }
         }
     }
 

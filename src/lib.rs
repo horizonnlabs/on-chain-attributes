@@ -116,6 +116,49 @@ pub trait OnChainAttributes: token::TokenModule {
             .nft_update_attributes(&token_id, nft_nonce, &new_attributes);
     }
 
+    #[only_owner]
+    #[endpoint(mintWithNewUriAndAttributes)]
+    fn mint_with_new_uri_and_attributes(
+        &self,
+        nft_nonce: u64,
+        name: ManagedBuffer,
+        background: ManagedBuffer,
+        skin: ManagedBuffer,
+        color: ManagedBuffer,
+        accessories: ManagedBuffer,
+        new_image_uri: ManagedBuffer,
+        new_metadata: ManagedBuffer,
+    ) {
+        let nft_attributes = self
+            .nft_token()
+            .get_token_attributes::<NftAttributes<Self::Api>>(nft_nonce);
+
+        let new_attributes = NftAttributes {
+            background,
+            skin,
+            color,
+            accessories,
+            level: nft_attributes.level + 1,
+            metadata: new_metadata,
+        };
+        let token_id = self.nft_token().get_token_id();
+
+        let mut uris: ManagedVec<ManagedBuffer> = ManagedVec::new();
+        uris.push(new_image_uri);
+
+        self.send().esdt_nft_create(
+            &token_id,
+            &BigUint::from(NFT_AMOUNT),
+            &name,
+            &BigUint::from(ROYALTIES),
+            &ManagedBuffer::new(),
+            &new_attributes,
+            &uris,
+        );
+        self.nft_token()
+            .nft_burn(nft_nonce, &BigUint::from(NFT_AMOUNT));
+    }
+
     #[view(getAttributForNft)]
     fn get_attribut_for_nft(&self, nft_nonce: u64, trait_index: u64) -> ManagedBuffer {
         let nft_attributes = self
