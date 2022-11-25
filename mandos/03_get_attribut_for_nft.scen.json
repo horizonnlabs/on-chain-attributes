@@ -1,5 +1,5 @@
 {
-    "name": "create nft",
+    "name": "get attribut for nft",
     "steps": [
         {
             "step": "externalSteps",

@@ -69,7 +69,8 @@
                         "str:NFT-abcdef": {
                             "roles": [
                                 "ESDTRoleNFTCreate",
-                                "ESDTRoleNFTBurn"
+                                "ESDTRoleNFTBurn",
+                                "ESDTRoleNFTUpdateAttributes"
                             ]
                         }
                     },
@@ -92,7 +93,8 @@
                         "str:NFT-abcdef": {
                             "roles": [
                                 "ESDTRoleNFTCreate",
-                                "ESDTRoleNFTBurn"
+                                "ESDTRoleNFTBurn",
+                                "ESDTRoleNFTUpdateAttributes"
                             ]
                         }
                     },

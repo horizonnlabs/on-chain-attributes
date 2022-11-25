@@ -1,47 +1,26 @@
 {
-    "name": "create nft",
+    "name": "mint with new uri and attributes",
     "steps": [
         {
             "step": "externalSteps",
-            "path": "01_fill_attributes.scen.json"
+            "path": "04_update_attributes.scen.json"
         },
         {
             "step": "scCall", 
-            "txId": "create Nft with attributes from storage",
+            "txId": "burn nonce 2 and mint a new nft ",
             "tx": {
                 "from": "address:owner",
                 "to": "sc:contract",
-                "function": "createWithOnChainAttributes",
+                "function": "mintWithNewUriAndAttributes",
                 "arguments": [
-                    "str:NftOcean",
-                    "1"
-                ],
-                "gasLimit": "40,000,000",
-                "gasPrice": "0"
-            },
-            "expect": {
-                "status": "0", 
-                "message": "",
-                "out": [],
-                "gas": "*",
-                "refund": "*"
-            }
-        },
-        {
-            "step": "scCall", 
-            "txId": "create Nft with attributes in args",
-            "tx": {
-                "from": "address:owner",
-                "to": "sc:contract",
-                "function": "createNft",
-                "arguments": [
-                    "str:BeautifulNft",
-                    "3",
-                    "str:Background",
-                    "str:Skin",
-                    "str:Color",
-                    "str:Accessories",
-                    "1"
+                    "2",
+                    "str:newNft",
+                    "str:Dragon",
+                    "str:Voyager",
+                    "str:Red",
+                    "str:Axe",
+                    "str:https://ipfs.io/ipfs/bafybeigrdesmvfr4cidkqypsquw66hrplsrq267u2lj5jqkq6kdexfzp5m",
+                    "str:metadata:ybfybeigrdesmvfr4cidkqypsquw66hrplsrq267u2lj5jqkq6kderthnzrt"
                 ],
                 "gasLimit": "40,000,000",
                 "gasPrice": "0"
@@ -71,20 +50,20 @@
 
                                 },
                                 {
-                                    "nonce": "2",
+                                    "nonce": "3",
                                     "balance": "1",
-                                    "uri": ["str:https://ipfs.io/ipfs/QmaS44fS6KJEarBaUHma8f1Fqore1bLYY8DEvPV6atAnyy/3.png"],
+                                    "uri": ["str:https://ipfs.io/ipfs/bafybeigrdesmvfr4cidkqypsquw66hrplsrq267u2lj5jqkq6kdexfzp5m"],
                                     "attributes": {
-                                        "01-background": "nested:str:Background",
-                                        "02-skin": "nested:str:Skin",
-                                        "03-color": "nested:str:Color",
-                                        "04-accessories": "nested:str:Accessories",
-                                        "05-level": "u16:1",
-                                        "06-metadata": "nested:str:metadata:QmP9KNxdDzseRa9wmfnhazAnavwMT6f7HqpnFzJ9uXRxRg/3.json"
+                                        "01-background": "nested:str:Dragon",
+                                        "02-skin": "nested:str:Voyager",
+                                        "03-color": "nested:str:Red",
+                                        "04-accessories": "nested:str:Axe",
+                                        "05-level": "u16:3",
+                                        "06-metadata": "nested:str:metadata:ybfybeigrdesmvfr4cidkqypsquw66hrplsrq267u2lj5jqkq6kderthnzrt"
                                     }
                                 }
                             ],
-                            "lastNonce": "2",
+                            "lastNonce": "3",
                             "roles": [
                                 "ESDTRoleNFTCreate",
                                 "ESDTRoleNFTBurn",

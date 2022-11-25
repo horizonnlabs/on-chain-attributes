@@ -1,47 +1,19 @@
 {
-    "name": "create nft",
+    "name": "update attributes",
     "steps": [
         {
             "step": "externalSteps",
-            "path": "01_fill_attributes.scen.json"
+            "path": "03_get_attribut_for_nft.scen.json"
         },
         {
             "step": "scCall", 
-            "txId": "create Nft with attributes from storage",
+            "txId": "update attributes for nonce 2",
             "tx": {
                 "from": "address:owner",
                 "to": "sc:contract",
-                "function": "createWithOnChainAttributes",
+                "function": "updateAttributes",
                 "arguments": [
-                    "str:NftOcean",
-                    "1"
-                ],
-                "gasLimit": "40,000,000",
-                "gasPrice": "0"
-            },
-            "expect": {
-                "status": "0", 
-                "message": "",
-                "out": [],
-                "gas": "*",
-                "refund": "*"
-            }
-        },
-        {
-            "step": "scCall", 
-            "txId": "create Nft with attributes in args",
-            "tx": {
-                "from": "address:owner",
-                "to": "sc:contract",
-                "function": "createNft",
-                "arguments": [
-                    "str:BeautifulNft",
-                    "3",
-                    "str:Background",
-                    "str:Skin",
-                    "str:Color",
-                    "str:Accessories",
-                    "1"
+                    "2"
                 ],
                 "gasLimit": "40,000,000",
                 "gasPrice": "0"
@@ -79,7 +51,7 @@
                                         "02-skin": "nested:str:Skin",
                                         "03-color": "nested:str:Color",
                                         "04-accessories": "nested:str:Accessories",
-                                        "05-level": "u16:1",
+                                        "05-level": "u16:2",
                                         "06-metadata": "nested:str:metadata:QmP9KNxdDzseRa9wmfnhazAnavwMT6f7HqpnFzJ9uXRxRg/3.json"
                                     }
                                 }
