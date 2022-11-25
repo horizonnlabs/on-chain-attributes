@@ -16,6 +16,10 @@
         {
             "trait_type": "Accessories",
             "value": "Gun"
+        },
+        {
+            "trait_type": "Level",
+            "value": 1
         }
     ]
 }

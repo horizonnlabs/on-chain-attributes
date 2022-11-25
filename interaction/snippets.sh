@@ -3,8 +3,8 @@ CHAIN="D"
 OWNER="../wallet-owner.pem"
 CONTRACT="output/on-chain-attributes.wasm"
 
-IMAGE_CID="0x$(echo -n 'QmaS44fS6KJEarBaUHma8f1Fqore1bLYY8DEvPV6atAnyy' | xxd -p -u | tr -d '\n')"
-METADATA_CID="0x$(echo -n 'QmP9KNxdDzseRa9wmfnhazAnavwMT6f7HqpnFzJ9uXRxRg' | xxd -p -u | tr -d '\n')"
+IMAGE_CID=str:QmaS44fS6KJEarBaUHma8f1Fqore1bLYY8DEvPV6atAnyy
+METADATA_CID=str:QmdWJ6NUZwzHUx1ZR3goHVrb8aptmVdYBdwVC1WfBZSdTR
 
 deploy() {
     erdpy --verbose contract deploy --bytecode="$CONTRACT" --recall-nonce \
@@ -38,8 +38,8 @@ upgrade() {
 }
 
 issueToken() {
-    token_name="0x$(echo -n 'NFT' | xxd -p -u | tr -d '\n')"
-    token_ticker="0x$(echo -n 'NFT' | xxd -p -u | tr -d '\n')"
+    token_name=str:NFT
+    token_ticker=str:NFT
 
     echo "issue token..."
 
@@ -65,41 +65,95 @@ setLocalRoles() {
 }
 
 fillAttributes() {
-    NUMBER_1=0x01
-    VALUE_ONE_1="0x$(echo -n 'ocean' | xxd -p -u | tr -d '\n')"
-    VALUE_TWO_1="0x$(echo -n 'boss' | xxd -p -u | tr -d '\n')"
-    VALUE_THREE_1="0x$(echo -n 'blue' | xxd -p -u | tr -d '\n')"
-    VALUE_FOUR_1="0x$(echo -n 'gun' | xxd -p -u | tr -d '\n')"
-    NUMBER_2=0x02
-    VALUE_ONE_2="0x$(echo -n 'desert' | xxd -p -u | tr -d '\n')"
-    VALUE_TWO_2="0x$(echo -n 'farmer' | xxd -p -u | tr -d '\n')"
-    VALUE_THREE_2="0x$(echo -n 'yellow' | xxd -p -u | tr -d '\n')"
-    VALUE_FOUR_2="0x$(echo -n 'none' | xxd -p -u | tr -d '\n')"
+    number_1=0x01
+    background_1=str:ocean
+    skin_1=str:boss
+    color_1=str:blue
+    accessories_1=str:gun
+    level_1=1
+    number_2=0x02
+    background_2=str:desert
+    skin_2=str:farmer
+    color_2=str:yellow
+    accessories_2=str:none
+    level_2=1
 
     erdpy --verbose contract call ${ADDRESS} --recall-nonce \
         --pem=$OWNER \
         --gas-limit=599000000 \
         --proxy=$PROXY --chain=$CHAIN \
         --function="fillAttributes" \
-        --arguments $NUMBER_1 $VALUE_ONE_1 $VALUE_TWO_1 $VALUE_THREE_1 $VALUE_FOUR_1 $NUMBER_2 $VALUE_ONE_2 $VALUE_TWO_2 $VALUE_THREE_2 $VALUE_FOUR_2 \
+        --arguments $number_1 $background_1 $skin_1 $color_1 $accessories_1 $level_1 $number_2 $background_2 $skin_2 $color_2 $accessories_2 $level_2 \
         --send || return
 }
 
 createWithOnChainAttributes() {
-    NAME="0x$(echo -n 'NftOne' | xxd -p -u | tr -d '\n')"
-    NUMBER=0x01
+    name=str:NftOne
+    number=1
 
     erdpy --verbose contract call ${ADDRESS} --recall-nonce \
         --pem=$OWNER \
         --gas-limit=599000000 \
         --proxy=$PROXY --chain=$CHAIN \
         --function="createWithOnChainAttributes" \
-        --arguments $NAME $NUMBER \
+        --arguments $name $number \
+        --send || return
+}
+
+createNft() {
+    name=str:NftOne
+
+    number=1
+    background=str:ocean
+    skin=str:boss
+    color=str:blue
+    accessories=str:gun
+    level=1
+
+    erdpy --verbose contract call ${ADDRESS} --recall-nonce \
+        --pem=$OWNER \
+        --gas-limit=599000000 \
+        --proxy=$PROXY --chain=$CHAIN \
+        --function="createNft" \
+        --arguments $name $number $background $skin $color $accessories $level \
+        --send || return
+}
+
+updateAttributes() {
+    nft_nonce=1
+
+    erdpy --verbose contract call ${ADDRESS} --recall-nonce \
+        --pem=$OWNER \
+        --gas-limit=599000000 \
+        --proxy=$PROXY --chain=$CHAIN \
+        --function="createNft" \
+        --arguments $nft_nonce \
+        --send || return
+}
+
+mintWithNewUriAndAttributes() {
+    nft_nonce=1
+    name=str:SuperNft
+
+    background=str:Dragon
+    skin=str:Voyager
+    color=str:Red
+    accessories=str:Axe
+
+    new_image_uri=https://ipfs.io/ipfs/<cid>
+    new_metadata=str:metadata:<cid>
+
+    erdpy --verbose contract call ${ADDRESS} --recall-nonce \
+        --pem=$OWNER \
+        --gas-limit=599000000 \
+        --proxy=$PROXY --chain=$CHAIN \
+        --function="mintWithNewUriAndAttributes" \
+        --arguments $nft_nonce $name $background $skin $color $accessories $new_image_uri $new_metadata \
         --send || return
 }
 
 getAttributForNft() {
-    NUMBER=0x01
-    TRAIT_INDEX=0x01
+    NUMBER=1
+    TRAIT_INDEX=1
     erdpy --verbose contract query ${ADDRESS} --function="getAttributForNft" --arguments $NUMBER $TRAIT_INDEX --proxy=${PROXY} 
 }
