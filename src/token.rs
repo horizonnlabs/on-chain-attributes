@@ -13,7 +13,7 @@ pub trait TokenModule {
         token_name: ManagedBuffer,
         token_ticker: ManagedBuffer,
     ) {
-        require!(self.nft_token_id().is_empty(), "Token already issued");
+        require!(self.nft_token().is_empty(), "Token already issued");
 		
         self.send()
             .esdt_system_sc_proxy()
@@ -38,7 +38,7 @@ pub trait TokenModule {
     #[only_owner]
     #[endpoint(setLocalRoles)]
     fn set_local_roles(&self) {
-        require!(!self.nft_token_id().is_empty(), "Token is not issued");
+        require!(!self.nft_token().is_empty(), "Token is not issued");
 
         let token = &self.nft_token_id().get();
         let roles = [
@@ -62,7 +62,7 @@ pub trait TokenModule {
     fn issue_callback(&self, #[call_result] result: ManagedAsyncCallResult<TokenIdentifier>) {
         match result {
             ManagedAsyncCallResult::Ok(token_id) => {
-                self.nft_token_id().set(&token_id);
+                self.nft_token_id().set_token_id(&token_id);
             },
             ManagedAsyncCallResult::Err(_) => {
                 let caller = self.blockchain().get_owner_address();
@@ -77,5 +77,5 @@ pub trait TokenModule {
 
     #[view(getNftTokenID)]
     #[storage_mapper("nftTokenID")]
-    fn nft_token_id(&self) -> SingleValueMapper<TokenIdentifier>;
+    fn nft_token(&self) -> NonFungibleTokenMapper<Self::Api>;
 }

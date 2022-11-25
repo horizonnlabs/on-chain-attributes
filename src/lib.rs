@@ -40,12 +40,8 @@ pub trait OnChainAttributes: token::TokenModule {
     // create NFT with attributes in arg
     #[only_owner]
     #[endpoint(createNft)]
-    fn create_nft(
-        &self,
-        name: ManagedBuffer,
-        token_attributes: AttributesAsMultiValue<Self::Api>,
-    ) {
-        require!(!self.nft_token_id().is_empty(), "Token is not issued");
+    fn create_nft(&self, name: ManagedBuffer, token_attributes: AttributesAsMultiValue<Self::Api>) {
+        require!(!self.nft_token().is_empty(), "Token is not issued");
 
         let (number, background, skin, color, accessories, level) = token_attributes.into_tuple();
         let metadata = self.build_metadata(number);
@@ -58,14 +54,14 @@ pub trait OnChainAttributes: token::TokenModule {
             level,
             metadata,
         };
-        let token = self.nft_token_id().get();
-        
+        let token_id = self.nft_token().get_token_id();
+
         let uri = self.build_uri(number);
         let mut uris = ManagedVec::new();
         uris.push(uri);
 
         self.send().esdt_nft_create::<NftAttributes<Self::Api>>(
-            &token,
+            &token_id,
             &BigUint::from(NFT_AMOUNT),
             &name,
             &BigUint::from(ROYALTIES),
@@ -79,13 +75,13 @@ pub trait OnChainAttributes: token::TokenModule {
     #[only_owner]
     #[endpoint(createWithOnChainAttributes)]
     fn create_nft_with_on_chain_attributes(&self, name: ManagedBuffer, number: u64) {
-        require!(!self.nft_token_id().is_empty(), "Token is not issued");
+        require!(!self.nft_token().is_empty(), "Token is not issued");
         require!(
             !self.attributes(number).is_empty(),
             "On-chain attributes doesn't exist"
         );
 
-        let token = self.nft_token_id().get();
+        let token_id = self.nft_token().get_token_id();
         let on_chain_attributes = self.attributes(number).get();
 
         let uri = self.build_uri(number);
@@ -93,7 +89,7 @@ pub trait OnChainAttributes: token::TokenModule {
         uris.push(uri);
 
         self.send().esdt_nft_create::<NftAttributes<Self::Api>>(
-            &token,
+            &token_id,
             &BigUint::from(NFT_AMOUNT),
             &name,
             &BigUint::from(ROYALTIES),
@@ -103,16 +99,28 @@ pub trait OnChainAttributes: token::TokenModule {
         );
     }
 
-    #[view(getAttributForNft)]
-    fn get_attribut_for_nft(&self, nonce: u64, trait_index: u64) -> ManagedBuffer {
-        let token = self.nft_token_id().get();
-        let nft_data = self.blockchain().get_esdt_token_data(
-            &self.blockchain().get_sc_address(),
-            &token,
-            nonce,
-        );
+    #[only_owner]
+    #[endpoint(updateAttributes)]
+    fn update_attributes(&self, nft_nonce: u64) {
+        let nft_attributes = self
+            .nft_token()
+            .get_token_attributes::<NftAttributes<Self::Api>>(nft_nonce);
 
-        let nft_attributes = nft_data.decode_attributes::<NftAttributes<Self::Api>>();
+        let new_attributes = NftAttributes {
+            level: nft_attributes.level + 1,
+            ..nft_attributes
+        };
+        let token_id = self.nft_token().get_token_id();
+
+        self.send()
+            .nft_update_attributes(&token_id, nft_nonce, &new_attributes);
+    }
+
+    #[view(getAttributForNft)]
+    fn get_attribut_for_nft(&self, nft_nonce: u64, trait_index: u64) -> ManagedBuffer {
+        let nft_attributes = self
+            .nft_token()
+            .get_token_attributes::<NftAttributes<Self::Api>>(nft_nonce);
 
         match trait_index {
             1 => nft_attributes.background,  // return ocean
