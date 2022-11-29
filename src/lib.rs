@@ -158,7 +158,7 @@ pub trait OnChainAttributes: token::TokenModule {
 
     #[only_owner]
     #[endpoint(fillAttributes)]
-    fn fill_attributes_endpoint(&self, attributes_raw: AttributesAsMultiValue<Self::Api>) {
+    fn fill_attributes(&self, attributes_raw: AttributesAsMultiValue<Self::Api>) {
         let (number, background, skin, color, accessories, level) = attributes_raw.into_tuple();
         let metadata = self.build_metadata(number);
 
