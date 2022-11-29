@@ -129,6 +129,9 @@ pub trait OnChainAttributes: token::TokenModule {
         let nft_attributes = self
             .nft_token()
             .get_token_attributes::<NftAttributes<Self::Api>>(nft_nonce);
+        
+        self.nft_token()
+            .nft_burn(nft_nonce, &BigUint::from(NFT_AMOUNT));
 
         let new_attributes = NftAttributes {
             background,
@@ -152,8 +155,6 @@ pub trait OnChainAttributes: token::TokenModule {
             &new_attributes,
             &uris,
         );
-        self.nft_token()
-            .nft_burn(nft_nonce, &BigUint::from(NFT_AMOUNT));
     }
 
     #[only_owner]

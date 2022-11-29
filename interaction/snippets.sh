@@ -1,6 +1,6 @@
 PROXY="https://devnet-gateway.elrond.com"
 CHAIN="D"
-OWNER="../wallet-owner.pem"
+OWNER="../../wallet-owner.pem"
 CONTRACT="output/on-chain-attributes.wasm"
 
 IMAGE_CID=str:QmaS44fS6KJEarBaUHma8f1Fqore1bLYY8DEvPV6atAnyy
@@ -71,23 +71,17 @@ fillAttributes() {
     color_1=str:blue
     accessories_1=str:gun
     level_1=1
-    number_2=0x02
-    background_2=str:desert
-    skin_2=str:farmer
-    color_2=str:yellow
-    accessories_2=str:none
-    level_2=1
 
     erdpy --verbose contract call ${ADDRESS} --recall-nonce \
         --pem=$OWNER \
         --gas-limit=599000000 \
         --proxy=$PROXY --chain=$CHAIN \
         --function="fillAttributes" \
-        --arguments $number_1 $background_1 $skin_1 $color_1 $accessories_1 $level_1 $number_2 $background_2 $skin_2 $color_2 $accessories_2 $level_2 \
+        --arguments $number_1 $background_1 $skin_1 $color_1 $accessories_1 $level_1 \
         --send || return
 }
 
-createWithOnChainAttributes() {
+createNftWithAttributesFromStorage() {
     name=str:NftOne
     number=1
 
@@ -95,7 +89,7 @@ createWithOnChainAttributes() {
         --pem=$OWNER \
         --gas-limit=599000000 \
         --proxy=$PROXY --chain=$CHAIN \
-        --function="createWithOnChainAttributes" \
+        --function="createNftWithAttributesFromStorage" \
         --arguments $name $number \
         --send || return
 }
@@ -104,10 +98,10 @@ createNft() {
     name=str:NftOne
 
     number=1
-    background=str:ocean
-    skin=str:boss
-    color=str:blue
-    accessories=str:gun
+    background=str:Ocean
+    skin=str:Boss
+    color=str:Blue
+    accessories=str:Gun
     level=1
 
     erdpy --verbose contract call ${ADDRESS} --recall-nonce \
@@ -126,12 +120,12 @@ updateAttributes() {
         --pem=$OWNER \
         --gas-limit=599000000 \
         --proxy=$PROXY --chain=$CHAIN \
-        --function="createNft" \
+        --function="updateAttributes" \
         --arguments $nft_nonce \
         --send || return
 }
 
-mintWithNewUriAndAttributes() {
+mintNftWithNewUriAndAttributes() {
     nft_nonce=1
     name=str:SuperNft
 
@@ -140,14 +134,14 @@ mintWithNewUriAndAttributes() {
     color=str:Red
     accessories=str:Axe
 
-    new_image_uri=https://ipfs.io/ipfs/<cid>
-    new_metadata=str:metadata:<cid>
+    #new_image_uri=https://ipfs.io/ipfs/<cid>
+    #new_metadata=str:metadata:<cid>
 
     erdpy --verbose contract call ${ADDRESS} --recall-nonce \
         --pem=$OWNER \
         --gas-limit=599000000 \
         --proxy=$PROXY --chain=$CHAIN \
-        --function="mintWithNewUriAndAttributes" \
+        --function="mintNftWithNewUriAndAttributes" \
         --arguments $nft_nonce $name $background $skin $color $accessories $new_image_uri $new_metadata \
         --send || return
 }
