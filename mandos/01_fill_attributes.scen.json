@@ -13,8 +13,7 @@
                 "to": "sc:contract",
                 "function": "fillAttributes",
                 "arguments": [
-                    "1", "str:ocean", "str:boss", "str:blue", "str:gun", "1",
-                    "2", "str:desert", "str:farmer", "str:yellow", "str:none", "1"
+                    "1", "str:ocean", "str:boss", "str:blue", "str:gun", "1"
                 ],
                 "gasLimit": "35,000,000",
                 "gasPrice": "0"
@@ -41,14 +40,6 @@
                             "4-accessories": "nested:str:gun",
                             "5-level": "u16:1",
                             "6-metadata": "nested:str:metadata:QmP9KNxdDzseRa9wmfnhazAnavwMT6f7HqpnFzJ9uXRxRg/1.json"
-                        },
-                        "str:attributes|u64:2": {
-                            "1-background": "nested:str:desert",
-                            "2-skin": "nested:str:farmer",
-                            "3-color": "nested:str:yellow",
-                            "4-accessories": "nested:str:none",
-                            "5-level": "u16:1",
-                            "6-metadata": "nested:str:metadata:QmP9KNxdDzseRa9wmfnhazAnavwMT6f7HqpnFzJ9uXRxRg/2.json"
                         },
                         "+": "*"
                     },

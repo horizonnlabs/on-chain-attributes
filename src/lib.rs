@@ -36,7 +36,6 @@ pub trait OnChainAttributes: token::TokenModule {
         self.metadata_cid().set(&metadata_cid);
     }
 
-    // create NFT with attributes in arg
     #[only_owner]
     #[endpoint(createNft)]
     fn create_nft(&self, name: ManagedBuffer, token_attributes: AttributesAsMultiValue<Self::Api>) {
@@ -70,10 +69,9 @@ pub trait OnChainAttributes: token::TokenModule {
         );
     }
 
-    // create NFT with attributes from the storage
     #[only_owner]
-    #[endpoint(createWithOnChainAttributes)]
-    fn create_nft_with_on_chain_attributes(&self, name: ManagedBuffer, number: u64) {
+    #[endpoint(createNftWithAttributesFromStorage)]
+    fn create_nft_with_attributes_from_storage(&self, name: ManagedBuffer, number: u64) {
         require!(!self.nft_token().is_empty(), "Token is not issued");
         require!(
             !self.attributes(number).is_empty(),
@@ -116,8 +114,8 @@ pub trait OnChainAttributes: token::TokenModule {
     }
 
     #[only_owner]
-    #[endpoint(mintWithNewUriAndAttributes)]
-    fn mint_with_new_uri_and_attributes(
+    #[endpoint(mintNftWithNewUriAndAttributes)]
+    fn mint_nft_with_new_uri_and_attributes(
         &self,
         nft_nonce: u64,
         name: ManagedBuffer,
@@ -158,6 +156,23 @@ pub trait OnChainAttributes: token::TokenModule {
             .nft_burn(nft_nonce, &BigUint::from(NFT_AMOUNT));
     }
 
+    #[only_owner]
+    #[endpoint(fillAttributes)]
+    fn fill_attributes_endpoint(&self, attributes_raw: AttributesAsMultiValue<Self::Api>) {
+        let (number, background, skin, color, accessories, level) = attributes_raw.into_tuple();
+        let metadata = self.build_metadata(number);
+
+        let attributes = NftAttributes {
+            background,
+            skin,
+            color,
+            accessories,
+            level,
+            metadata,
+        };
+        self.attributes(number).set(&attributes);
+    }
+
     #[view(getAttributForNft)]
     fn get_attribut_for_nft(&self, nft_nonce: u64, trait_index: u64) -> ManagedBuffer {
         let nft_attributes = self
@@ -165,34 +180,12 @@ pub trait OnChainAttributes: token::TokenModule {
             .get_token_attributes::<NftAttributes<Self::Api>>(nft_nonce);
 
         match trait_index {
-            1 => nft_attributes.background,  // return ocean
-            2 => nft_attributes.skin,        // return boss
-            3 => nft_attributes.color,       // return blue
-            4 => nft_attributes.accessories, // return gun
-            5 => nft_attributes.metadata,    // return metadata:<cid>/1.json
+            1 => nft_attributes.background,
+            2 => nft_attributes.skin,
+            3 => nft_attributes.color,
+            4 => nft_attributes.accessories,
+            5 => nft_attributes.metadata,
             _ => sc_panic!("Not found"),
-        }
-    }
-
-    #[only_owner]
-    #[endpoint(fillAttributes)]
-    fn fill_attributes_endpoint(
-        &self,
-        attributes: MultiValueEncoded<AttributesAsMultiValue<Self::Api>>,
-    ) {
-        for attribut in attributes.into_iter() {
-            let (number, background, skin, color, accessories, level) = attribut.into_tuple();
-            let metadata = self.build_metadata(number);
-
-            let attributes = NftAttributes {
-                background,
-                skin,
-                color,
-                accessories,
-                level,
-                metadata,
-            };
-            self.attributes(number).set(&attributes);
         }
     }
 

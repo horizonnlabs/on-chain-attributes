@@ -11,7 +11,7 @@
             "tx": {
                 "from": "address:owner",
                 "to": "sc:contract",
-                "function": "mintWithNewUriAndAttributes",
+                "function": "mintNftWithNewUriAndAttributes",
                 "arguments": [
                     "2",
                     "str:newNft",

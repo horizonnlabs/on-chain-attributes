@@ -45,14 +45,14 @@
                                 {
                                     "nonce": "2",
                                     "balance": "1",
-                                    "uri": ["str:https://ipfs.io/ipfs/QmaS44fS6KJEarBaUHma8f1Fqore1bLYY8DEvPV6atAnyy/3.png"],
+                                    "uri": ["str:https://ipfs.io/ipfs/QmaS44fS6KJEarBaUHma8f1Fqore1bLYY8DEvPV6atAnyy/2.png"],
                                     "attributes": {
                                         "01-background": "nested:str:Background",
                                         "02-skin": "nested:str:Skin",
                                         "03-color": "nested:str:Color",
                                         "04-accessories": "nested:str:Accessories",
                                         "05-level": "u16:2",
-                                        "06-metadata": "nested:str:metadata:QmP9KNxdDzseRa9wmfnhazAnavwMT6f7HqpnFzJ9uXRxRg/3.json"
+                                        "06-metadata": "nested:str:metadata:QmP9KNxdDzseRa9wmfnhazAnavwMT6f7HqpnFzJ9uXRxRg/2.json"
                                     }
                                 }
                             ],

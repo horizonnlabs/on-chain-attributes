@@ -9,12 +9,12 @@ elrond_wasm_node::wasm_endpoints! {
     (
         callBack
         createNft
-        createWithOnChainAttributes
+        createNftWithAttributesFromStorage
         fillAttributes
         getAttributForNft
         getNftTokenID
         issueToken
-        mintWithNewUriAndAttributes
+        mintNftWithNewUriAndAttributes
         setLocalRoles
         updateAttributes
     )
